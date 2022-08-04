@@ -1,5 +1,6 @@
 
 const choices = ['rock', 'paper', 'scissors'];
+const playerButtons = document.querySelectorAll('.button');
 let playerScore = 0;
 let computerScore = 0;
 
@@ -89,10 +90,36 @@ function playGame(e) {
     const computerSelection = getComputerChoice();
     const result = playRound(playerSelection, computerSelection);
     updateStatus(result);
+    checkIfGameOver();
+}
+
+function checkIfGameOver() {
+    if (playerScore === 5 || computerScore === 5) {
+        gameOver();
+    }
+}
+
+function gameOver() {
+    if (playerScore === 5) {
+        updateHistory("You win the game!");
+    } else if (computerScore === 5) {
+        updateHistory("The computer wins the game!");
+    }
+    playerButtons.forEach(function (button) {
+        button.removeEventListener("click", playGame);
+        button.disabled = true;
+    });
+}
+
+function updateHistory(message) {
+    const historyList = document.getElementById("history-list");
+    const historyItem = document.createElement("li");
+    historyItem.textContent = message;
+    const oldHistoryItem = document.querySelector("#history-list li:first-child");
+    historyList.insertBefore(historyItem, oldHistoryItem);
 }
 
 function updateStatus(result) {
-
     let resultText = result.message;
 
     switch (result.status) {
@@ -107,15 +134,10 @@ function updateStatus(result) {
     statusUpdate.textContent = resultText;
     status.appendChild(statusUpdate);
 
-    const historyList = document.getElementById("history-list");
-    const historyItem = document.createElement("li");
-    historyItem.textContent = resultText + " You: " + playerScore + " Computer: " + computerScore;
-    const oldHistoryItem = document.querySelector("#history-list li:first-child");
-    historyList.insertBefore(historyItem, oldHistoryItem);
+    updateHistory(resultText + " You: " + playerScore + " Computer: " + computerScore);
 
-    console.log(status);
-    console.log(result);
+    //console.log(status);
+    //console.log(result);
 }
 
-const playerButtons = document.querySelectorAll('.button');
 playerButtons.forEach(button => button.addEventListener('click', playGame));
